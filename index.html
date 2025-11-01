@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Ultimate Pie Rating Scorecard</title>
+    <!-- Load Tailwind CSS from CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom font and basic styling */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f7f7;
+            min-height: 100vh;
+        }
+        .rating-btn:checked + label {
+            background-color: #f97316; /* Orange-600 */
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+            transform: scale(1.05);
+        }
+        .rating-btn {
+            display: none;
+        }
+        .rating-label {
+            transition: all 0.15s ease-in-out;
+        }
+        .rating-label:hover {
+            background-color: #fdba74; /* Orange-300 */
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="p-4 sm:p-8 flex flex-col items-center">
+
+    <div class="w-full max-w-4xl bg-white p-6 sm:p-10 rounded-xl shadow-2xl">
+        
+        <!-- Header -->
+        <header class="text-center mb-10">
+            <h1 class="text-4xl sm:text-5xl font-extrabold text-gray-900 leading-tight">
+                🥧 The Ultimate Pie Scorecard
+            </h1>
+            <p class="mt-2 text-lg text-gray-600">Rate your culinary creation on a weighted scale (Max 50 Points).</p>
+            <div id="grade-display" class="mt-6 p-4 rounded-lg shadow-inner bg-gray-50 border border-gray-200">
+                <span class="text-lg font-semibold text-gray-700">Current Score: </span>
+                <span id="total-score" class="text-3xl font-bold text-blue-600">0</span>
+                <span class="text-lg font-semibold text-gray-700"> / 50</span>
+                <p id="pie-grade" class="text-xl font-extrabold mt-1 text-green-600">Grade: F</p>
+            </div>
+        </header>
+
+        <!-- Pie Details Form -->
+        <section class="mb-8 border-b pb-6">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">1. Pie Details</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label for="pie-type" class="block text-sm font-medium text-gray-700">Pie Type</label>
+                    <input type="text" id="pie-type" placeholder="e.g., Cherry Lattice, Pecan, Quiche"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 p-3 border">
+                </div>
+                <div>
+                    <label for="baker" class="block text-sm font-medium text-gray-700">Baker / Source</label>
+                    <input type="text" id="baker" placeholder="Who made this masterpiece?"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 p-3 border">
+                </div>
+            </div>
+        </section>
+
+        <!-- Scoring Section -->
+        <section id="scoring-section">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">2. Weighted Criteria (Rate 1-5)</h2>
+
+            <!-- CRUST EXCELLENCE (Weight: x3) -->
+            <div class="mb-8 p-5 bg-orange-50 rounded-lg shadow-md">
+                <h3 class="text-xl font-semibold text-orange-700 mb-3">Crust Excellence <span class="text-sm font-normal text-gray-500">(Max 15 Pts)</span></h3>
+                <p class="text-sm text-gray-600 mb-3">Flaky texture, rich flavor, and structural integrity.</p>
+                <div class="flex justify-between items-center space-x-2">
+                    <label class="text-sm font-medium text-gray-800">Score:</label>
+                    <div id="rating-crust" data-weight="3" class="flex space-x-1">
+                        <!-- Radio buttons for 1-5 rating -->
+                        <!-- Score 1 -->
+                        <input type="radio" id="crust-1" name="crust" value="1" class="rating-btn" onchange="calculateScore()">
+                        <label for="crust-1" class="rating-label w-8 h-8 flex items-center justify-center rounded-full bg-white text-gray-700 border border-gray-300 text-sm font-semibold">1</label>
+                        <!-- Score 2 -->
+                        <input type="radio" id="crust-2" name="crust" value="2" class="rating-btn" onchange="calculateScore()">
+                        <label for="crust-2" class="rating-label w-8 h-8 flex items-center justify-center rounded-full bg-white text-gray-700 border border-gray-300 text-sm font-semibold">2</label>
+                        <!-- Score 3 -->
+                        <input type="radio" id="crust-3" name="crust" value="3" class="rating-btn" onchange="calculateScore()">
+                        <label for="crust-3" class="rating-label w-8 h-8 flex items-center justify-center rounded-full bg-white text-gray-700 border border-gray-300 text-sm font-semibold">3</label>
+                        <!-- Score 4 -->
+                        <input type="radio" id="crust-4" name="crust" value="4" class="rating-btn" onchange="calculateScore()">
+                        <label for="crust-4" class="rating-label w-8 h-8 flex items-center justify-center rounded-full bg-white text-gray-700 border border-gray-300 text-sm font-semibold">4</label>
+                        <!-- Score 5 -->
+                        <input type="radio" id="crust-5" name="crust" value="5" class="rating-btn" onchange="calculateScore()">
+                        <label for="crust-5" class="rating-label w-8 h-8 flex items-center justify-center rounded-full bg-white text-gray-700 border border-gray-300 text-sm font-semibold">5</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FILLING QUALITY (Weight: x3) -->
+            <div class="mb-8 p-5 bg-orange-50 rounded-lg shadow-md">
+                <h3 class="text-xl font-semibold text-orange-700 mb-3">Filling Quality <span class="text-sm font-normal text-gray-500">(Max 15 Pts)</span></h3>
+                <p class="text-sm text-gray-600 mb-3">Balanced flavor profile, perfect consistency (not runny or dry), and high-quality ingredients.</p>
+                <div class="flex justify-between items-center space-x-2">
+                    <label class="text-sm font-medium text-gray-800">Score:</label>
+                    <div id="rating-filling" data-weight="3" class="flex space-x-1">
+                        <input type="radio" id="filling-1" name="filling" value="1" class="rating-btn" onchange="calculateScore()">
+                        <label for="filling-1" class="rating-label w-8 h-8 flex items-center justify-center rounded-full bg-white text-gray-700 border border-gray-300 text-sm font-semibold">1</label>
+                        <input type="radio" id="filling-2" name="filling" value="2" class="rating-btn" onchange="calculateScore()">
+                        <label for="filling-2" class="rating-label w-8 h-8 flex items-center justify-center rounded-full bg-white text-gray-700 border border-gray-300 text-sm font-semibold">2</label>
+                        <input type="radio" id="filling-3" name="filling" value="3" class="rating-btn" onchange="calculateScore()">
+                        <label for="filling-3" class="rating-label w-8 h-8 flex items-center justify-center rounded-full bg-white text-gray-700 border border-gray-300 text-sm font-semibold">3</label>
+                        <input type="radio" id="filling-4" name="filling" value="4" class="rating-btn" onchange="calculateScore()">
+                        <label for="filling-4" class="rating-label w-8 h-8 flex items-center justify-center rounded-full bg-white text-gray-700 border border-gray-300 text-sm font-semibold">4</label>
+                        <input type="radio" id="filling-5" name="filling" value="5" class="rating-btn" onchange="calculateScore()">
+                        <label for="filling-5" class="rating-label w-8 h-8 flex items-center justify-center rounded-full bg-white text-gray-700 border border-gray-300 text-sm font-semibold">5</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PRESENTATION (Weight: x2) -->
+            <div class="mb-8 p-5 bg-orange-50 rounded-lg shadow-md">
+                <h3 class="text-xl font-semibold text-orange-700 mb-3">Presentation <span class="text-sm font-normal text-gray-500">(Max 10 Pts)</span></h3>
+                <p class="text-sm text-gray-600 mb-3">Visual appeal of the whole pie and how cleanly it slices.</p>
+                <div class="flex justify-between items-center space-x-2">
+                    <label class="text-sm font-medium text-gray-800">Score:</label>
+                    <div id="rating-presentation" data-weight="2" class="flex space-x-1">
+                        <input type="radio" id="presentation-1" name="presentation" value="1" class="rating-btn" onchange="calculateScore()">
+                        <label for="presentation-1" class="rating-label w-8 h-8 flex items-center justify-center rounded-full bg-white text-gray-700 border border-gray-300 text-sm font-semibold">1</label>
+                        <input type="radio" id="presentation-2" name="presentation" value="2" class="rating-btn" onchange="calculateScore()">
+                        <label for="presentation-2" class="rating-label w-8 h-8 flex items-center justify-center rounded-full bg-white text-gray-700 border border-gray-300 text-sm font-semibold">2</label>
+                        <input type="radio" id="presentation-3" name="presentation" value="3" class="rating-btn" onchange="calculateScore()">
+                        <label for="presentation-3" class="rating-label w-8 h-8 flex items-center justify-center rounded-full bg-white text-gray-700 border border-gray-300 text-sm font-semibold">3</label>
+                        <input type="radio" id="presentation-4" name="presentation" value="4" class="rating-btn" onchange="calculateScore()">
+                        <label for="presentation-4" class="rating-label w-8 h-8 flex items-center justify-center rounded-full bg-white text-gray-700 border border-gray-300 text-sm font-semibold">4</label>
+                        <input type="radio" id="presentation-5" name="presentation" value="5" class="rating-btn" onchange="calculateScore()">
+                        <label for="presentation-5" class="rating-label w-8 h-8 flex items-center justify-center rounded-full bg-white text-gray-700 border border-gray-300 text-sm font-semibold">5</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- OVERALL EXPERIENCE (Weight: x2) -->
+            <div class="mb-8 p-5 bg-orange-50 rounded-lg shadow-md">
+                <h3 class="text-xl font-semibold text-orange-700 mb-3">Overall Experience <span class="text-sm font-normal text-gray-500">(Max 10 Pts)</span></h3>
+                <p class="text-sm text-gray-600 mb-3">Harmony of components and the desire to eat more.</p>
+                <div class="flex justify-between items-center space-x-2">
+                    <label class="text-sm font-medium text-gray-800">Score:</label>
+                    <div id="rating-experience" data-weight="2" class="flex space-x-1">
+                        <input type="radio" id="experience-1" name="experience" value="1" class="rating-btn" onchange="calculateScore()">
+                        <label for="experience-1" class="rating-label w-8 h-8 flex items-center justify-center rounded-full bg-white text-gray-700 border border-gray-300 text-sm font-semibold">1</label>
+                        <input type="radio" id="experience-2" name="experience" value="2" class="rating-btn" onchange="calculateScore()">
+                        <label for="experience-2" class="rating-label w-8 h-8 flex items-center justify-center rounded-full bg-white text-gray-700 border border-gray-300 text-sm font-semibold">2</label>
+                        <input type="radio" id="experience-3" name="experience" value="3" class="rating-btn" onchange="calculateScore()">
+                        <label for="experience-3" class="rating-label w-8 h-8 flex items-center justify-center rounded-full bg-white text-gray-700 border border-gray-300 text-sm font-semibold">3</label>
+                        <input type="radio" id="experience-4" name="experience" value="4" class="rating-btn" onchange="calculateScore()">
+                        <label for="experience-4" class="rating-label w-8 h-8 flex items-center justify-center rounded-full bg-white text-gray-700 border border-gray-300 text-sm font-semibold">4</label>
+                        <input type="radio" id="experience-5" name="experience" value="5" class="rating-btn" onchange="calculateScore()">
+                        <label for="experience-5" class="rating-label w-8 h-8 flex items-center justify-center rounded-full bg-white text-gray-700 border border-gray-300 text-sm font-semibold">5</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Critique Area -->
+            <div class="mb-8 p-5 bg-gray-50 rounded-lg shadow-md">
+                <label for="critique" class="block text-lg font-bold text-gray-800 mb-2">3. Critique & Notes</label>
+                <textarea id="critique" rows="4" placeholder="What worked well, and what could be improved?"
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 p-3 border"></textarea>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 justify-end">
+                <button onclick="saveRating()"
+                    class="w-full sm:w-auto px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out">
+                    💾 Save Pie Rating
+                </button>
+                <button onclick="resetForm()"
+                    class="w-full sm:w-auto px-6 py-3 border border-gray-300 text-base font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out">
+                    Clear Form
+                </button>
+            </div>
+            <p id="message-box" class="mt-4 text-center font-medium text-green-600 hidden"></p>
+        </section>
+
+        <!-- Saved Ratings List -->
+        <section class="mt-12 pt-6 border-t border-gray-200">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">4. Past Ratings</h2>
+            <ul id="saved-ratings-list" class="space-y-4">
+                <li id="no-pies-message" class="text-gray-500 italic">No pies have been rated yet.</li>
+            </ul>
+        </section>
+
+    </div>
+
+    <script>
+        // Use an in-memory array to store ratings
+        let pieRatings = [];
+
+        // Define the weighted categories and their max possible scores
+        const CATEGORIES = [
+            { name: 'crust', weight: 3, max: 15 },
+            { name: 'filling', weight: 3, max: 15 },
+            { name: 'presentation', weight: 2, max: 10 },
+            { name: 'experience', weight: 2, max: 10 }
+        ];
+
+        /**
+         * Calculates the total weighted score and updates the display.
+         */
+        function calculateScore() {
+            let totalScore = 0;
+            let allRated = true;
+
+            CATEGORIES.forEach(category => {
+                // Find the selected radio button for this category
+                const selector = `input[name="${category.name}"]:checked`;
+                const checkedRadio = document.querySelector(selector);
+                
+                let score = 0;
+                if (checkedRadio) {
+                    // Parse the 1-5 score from the radio button value
+                    score = parseInt(checkedRadio.value);
+                    // Apply the weight
+                    totalScore += score * category.weight;
+                } else {
+                    allRated = false;
+                }
+            });
+
+            // Update the display elements
+            const totalScoreEl = document.getElementById('total-score');
+            const pieGradeEl = document.getElementById('pie-grade');
+            
+            totalScoreEl.textContent = totalScore;
+            pieGradeEl.textContent = `Grade: ${getGrade(totalScore)}`;
+            
+            // Apply color coding to the grade
+            let gradeColor = 'text-red-600';
+            const grade = getGrade(totalScore);
+
+            if (grade.startsWith('A')) {
+                gradeColor = 'text-green-600';
+            } else if (grade.startsWith('B')) {
+                gradeColor = 'text-yellow-600';
+            } else if (grade.startsWith('C')) {
+                gradeColor = 'text-orange-600';
+            }
+            
+            pieGradeEl.className = `text-xl font-extrabold mt-1 ${gradeColor}`;
+        }
+
+        /**
+         * Determines the letter grade based on the total score.
+         * @param {number} score The calculated weighted score (max 50).
+         * @returns {string} The letter grade.
+         */
+        function getGrade(score) {
+            if (score >= 45) return 'A+ (The Gold Standard)';
+            if (score >= 40) return 'A (Excellent)';
+            if (score >= 35) return 'B (Very Good)';
+            if (score >= 30) return 'C (Average / Edible)';
+            return 'D (Needs Significant Work)';
+        }
+
+        /**
+         * Collects current form data and saves it to the in-memory array.
+         */
+        function saveRating() {
+            const pieType = document.getElementById('pie-type').value.trim();
+            const baker = document.getElementById('baker').value.trim();
+            const critique = document.getElementById('critique').value.trim();
+
+            if (!pieType) {
+                showMessage("Please enter the Pie Type before saving.", 'text-red-600');
+                return;
+            }
+
+            let totalScore = 0;
+            let ratingScores = {};
+            let allRated = true;
+
+            CATEGORIES.forEach(category => {
+                const checkedRadio = document.querySelector(`input[name="${category.name}"]:checked`);
+                
+                if (checkedRadio) {
+                    const score = parseInt(checkedRadio.value);
+                    totalScore += score * category.weight;
+                    ratingScores[category.name] = score;
+                } else {
+                    allRated = false;
+                }
+            });
+
+            if (!allRated) {
+                showMessage("Please rate all four categories before saving.", 'text-red-600');
+                return;
+            }
+
+            const newRating = {
+                type: pieType,
+                baker: baker || 'Unknown',
+                score: totalScore,
+                grade: getGrade(totalScore),
+                ratings: ratingScores,
+                critique: critique || 'No critique provided.',
+                date: new Date().toLocaleDateString()
+            };
+
+            pieRatings.unshift(newRating); // Add to the start of the array
+            renderSavedRatings();
+            showMessage(`Rating for "${pieType}" saved successfully!`, 'text-green-600');
+            resetForm(false); // Clear the form but keep the saved ratings visible
+        }
+
+        /**
+         * Renders the list of saved pie ratings.
+         */
+        function renderSavedRatings() {
+            const listEl = document.getElementById('saved-ratings-list');
+            const noPiesMessage = document.getElementById('no-pies-message');
+            listEl.innerHTML = ''; // Clear existing list
+
+            if (pieRatings.length === 0) {
+                listEl.appendChild(noPiesMessage);
+                noPiesMessage.classList.remove('hidden');
+                return;
+            }
+
+            noPiesMessage.classList.add('hidden');
+
+            pieRatings.forEach((rating, index) => {
+                const li = document.createElement('li');
+                li.className = 'p-4 bg-gray-50 border border-gray-200 rounded-lg shadow-sm';
+                
+                let detailHtml = `
+                    <div class="flex justify-between items-start border-b pb-2 mb-2">
+                        <h4 class="text-xl font-bold text-gray-800">${rating.type} <span class="text-sm font-normal text-gray-500">by ${rating.baker}</span></h4>
+                        <span class="text-2xl font-extrabold px-3 py-1 rounded-full text-white ${rating.grade.startsWith('A') ? 'bg-green-600' : rating.grade.startsWith('B') ? 'bg-yellow-600' : rating.grade.startsWith('C') ? 'bg-orange-600' : 'bg-red-600'}">
+                            ${rating.grade.charAt(0)}
+                        </span>
+                    </div>
+                    <p class="text-sm text-gray-600">Rated on: ${rating.date}</p>
+                    <p class="text-lg font-semibold text-blue-600 mt-1">Total Score: ${rating.score} / 50</p>
+                    <div class="mt-2 text-sm text-gray-700">
+                        <p class="font-medium">Critique:</p>
+                        <p class="italic ml-2">${rating.critique}</p>
+                    </div>
+                    <button onclick="removeRating(${index})" class="mt-3 text-sm text-red-500 hover:text-red-700 transition">Remove</button>
+                `;
+                
+                li.innerHTML = detailHtml;
+                listEl.appendChild(li);
+            });
+        }
+
+        /**
+         * Clears the rating form fields.
+         * @param {boolean} showMessageOnClear Whether to show a success message (defaults to true).
+         */
+        function resetForm(showMessageOnClear = true) {
+            document.getElementById('pie-type').value = '';
+            document.getElementById('baker').value = '';
+            document.getElementById('critique').value = '';
+
+            // Uncheck all radio buttons
+            document.querySelectorAll('input[type="radio"]').forEach(radio => {
+                radio.checked = false;
+            });
+
+            // Reset score display
+            calculateScore(); 
+            
+            if (showMessageOnClear) {
+                showMessage("Form cleared.", 'text-gray-500');
+            }
+        }
+
+        /**
+         * Removes a rating from the list.
+         * @param {number} index The index of the rating to remove.
+         */
+        function removeRating(index) {
+            // Using a simple custom confirmation modal pattern
+            const listEl = document.getElementById('saved-ratings-list');
+            const itemEl = listEl.children[index];
+            const pieName = pieRatings[index].type;
+
+            const modalHtml = `
+                <div class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50">
+                    <div class="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full">
+                        <p class="text-lg font-semibold mb-4">Confirm Deletion</p>
+                        <p class="mb-6">Are you sure you want to remove the rating for **${pieName}**?</p>
+                        <div class="flex justify-end space-x-3">
+                            <button id="cancel-delete" class="px-4 py-2 text-gray-700 border border-gray-300 rounded-md hover:bg-gray-100 transition">Cancel</button>
+                            <button id="confirm-delete" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition">Remove</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Append modal to body
+            const modalContainer = document.createElement('div');
+            modalContainer.innerHTML = modalHtml;
+            document.body.appendChild(modalContainer);
+
+            // Setup listeners
+            document.getElementById('cancel-delete').onclick = () => document.body.removeChild(modalContainer);
+            document.getElementById('confirm-delete').onclick = () => {
+                pieRatings.splice(index, 1);
+                renderSavedRatings();
+                document.body.removeChild(modalContainer);
+                showMessage(`Rating for "${pieName}" deleted.`, 'text-red-500');
+            };
+        }
+
+
+        /**
+         * Displays a temporary message in the message box.
+         * @param {string} message The message to display.
+         * @param {string} colorClass Tailwind text color class (e.g., 'text-green-600').
+         */
+        function showMessage(message, colorClass) {
+            const msgBox = document.getElementById('message-box');
+            msgBox.textContent = message;
+            msgBox.className = `mt-4 text-center font-medium ${colorClass}`;
+            msgBox.classList.remove('hidden');
+
+            setTimeout(() => {
+                msgBox.classList.add('hidden');
+                msgBox.textContent = '';
+            }, 3000);
+        }
+
+        // Initialize score display and past ratings on load
+        window.onload = function() {
+            calculateScore();
+            renderSavedRatings();
+        }
+
+    </script>
+
+</body>
+</html>
